@@ -1,0 +1,30 @@
+﻿@model Switches.Services.SwitchGameService
+
+
+@{
+    ViewData["Title"] = "Switch Puzzle";
+}
+
+<h2>Switch Puzzle</h2>
+
+<p>Current State: <strong>@Model.GetStateString()</strong></p>
+<p>Moves Used: @Model.MoveCount / @Model.MaxMoves</p>
+
+@if (Model.IsComplete)
+{
+    <p style="color: green;"><strong>✅ Puzzle Solved!</strong></p>
+}
+else if (Model.OutOfMoves)
+{
+    <p style="color: red;"><strong>❌ Out of Moves! Try again.</strong></p>
+}
+
+<form method="post" asp-action="Press">
+    <button type="submit" name="id" value="0">Switch A</button>
+    <button type="submit" name="id" value="1">Switch B</button>
+    <button type="submit" name="id" value="2">Switch C</button>
+</form>
+
+<form method="post" asp-action="Reset" style="margin-top: 1rem;">
+    <button type="submit">🔁 Reset Puzzle</button>
+</form>
