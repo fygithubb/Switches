@@ -1,30 +1,158 @@
 ﻿@model Switches.Services.SwitchGameService
 
-
 @{
     ViewData["Title"] = "Switch Puzzle";
 }
 
-<h2>Switch Puzzle</h2>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f3f3f3;
+        color: #2c2c2c;
+        margin: 0;
+        padding: 0;
+    }
 
-<p>Current State: <strong>@Model.GetStateString()</strong></p>
-<p>Moves Used: @Model.MoveCount / @Model.MaxMoves</p>
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 75vh;
+        text-align: center;
+    }
 
-@if (Model.IsComplete)
-{
-    <p style="color: green;"><strong>✅ Puzzle Solved!</strong></p>
-}
-else if (Model.OutOfMoves)
-{
-    <p style="color: red;"><strong>❌ Out of Moves! Try again.</strong></p>
-}
+    .game-title {
+        font-family: 'Cinzel', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #1e1e1e;
+    }
 
-<form method="post" asp-action="Press">
-    <button type="submit" name="id" value="0">Switch A</button>
-    <button type="submit" name="id" value="1">Switch B</button>
-    <button type="submit" name="id" value="2">Switch C</button>
-</form>
+    .switch-lights {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
 
-<form method="post" asp-action="Reset" style="margin-top: 1rem;">
-    <button type="submit">🔁 Reset Puzzle</button>
-</form>
+    .light {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background-color: #444;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease-in-out;
+    }
+
+        .light.on {
+            background-color: #00aa00;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .light.error {
+            background-color: #990000;
+            box-shadow: 0 0 20px #ff3333;
+        }
+
+    .switch-buttons form,
+    .reset-button form {
+        display: inline-block;
+        margin: 0.25rem;
+    }
+
+    .switch-buttons button,
+    .reset-button button {
+        background-color: #1e1e1e;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.4rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .switch-buttons button:hover,
+        .reset-button button:hover {
+            background-color: #333;
+        }
+
+    .status-text {
+        margin-top: 1rem;
+        font-size: 1rem;
+        color: #444;
+    }
+
+        .status-text strong {
+            font-weight: 600;
+        }
+
+    .message {
+        margin-top: 1rem;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .success {
+        color: #00aa00;
+    }
+
+    .error {
+        color: #cc0000;
+    }
+</style>
+
+<div class="game-container">
+    <div class="game-title">Switch Puzzle</div>
+
+    <div class="switch-lights">
+        @{
+            string state = Model.GetStateString();
+            for (int i = 0; i < 3; i++)
+            {
+                var cssClass = "";
+
+                if (Model.IsComplete)
+                {
+                    cssClass = "light on"; // All green if solved
+                }
+                else
+                {
+                    cssClass = state[i] == '1' ? "light on" : "light"; // Show current state
+                }
+
+                <div class="@cssClass"></div>
+            }
+        }
+    </div>
+
+
+    <div class="switch-buttons">
+        <form method="post" asp-action="Press">
+            <button type="submit" name="id" value="0">Switch A</button>
+            <button type="submit" name="id" value="1">Switch B</button>
+            <button type="submit" name="id" value="2">Switch C</button>
+        </form>
+    </div>
+
+    <div class="reset-button">
+        <form method="post" asp-action="Reset">
+            <button type="submit">🔁 Reset</button>
+        </form>
+    </div>
+
+    <div class="status-text">
+        <p>State: <strong>@Model.GetStateString()</strong></p>
+        <p>Moves Used: <strong>@Model.MoveCount</strong> / @Model.MaxMoves</p>
+    </div>
+
+    @if (Model.IsComplete)
+    {
+        <div class="message success">🎉 Puzzle Solved Successfully!</div>
+    }
+    else if (Model.OutOfMoves)
+    {
+        <div class="message error">❌ Out of Moves! Try again.</div>
+    }
+</div>

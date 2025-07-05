@@ -11,7 +11,7 @@
 
         public int CurrentState { get; private set; } = 0b000;
         public int MoveCount { get; private set; } = 0;
-        public int MaxMoves { get; private set; } = 3;
+        public int MaxMoves { get; private set; } = 5;
 
 
         //status properties
