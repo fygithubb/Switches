@@ -6,12 +6,12 @@
         {
             0b110,   //Switch A affect A and B
             0b011,   // Switch B affects B and C
-            0b101    // Switch C affects C
+            0b001    // Switch C affects C
         };
 
         public int CurrentState { get; private set; } = 0b000;
         public int MoveCount { get; private set; } = 0;
-        public int MaxMoves { get; private set; } = 5;
+        public int MaxMoves { get; private set; } = 4;
 
 
         //status properties
