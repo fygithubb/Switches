@@ -1,148 +1,106 @@
 ﻿@model Switches.Services.SwitchGameService
-
 @{
     ViewData["Title"] = "Switch Puzzle";
+    var state = Model.GetStateString();
 }
 
 <style>
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #f3f3f3;
-        color: #2c2c2c;
-        margin: 0;
-        padding: 0;
-    }
-
-    .game-container {
+    .game-wrapper {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        min-height: 75vh;
-        text-align: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
     }
 
-    .game-title {
-        font-family: 'Cinzel', serif;
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        color: #1e1e1e;
+    h2 {
+        margin-bottom: 20px;
     }
 
-    .switch-lights {
+    .lights {
         display: flex;
-        gap: 2rem;
-        margin-bottom: 2rem;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 20px;
     }
 
     .light {
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        background-color: #444;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        transition: all 0.3s ease-in-out;
+        background: #ccc;
+        box-shadow: 0 0 10px #888;
+        transition: background 0.3s;
     }
 
         .light.on {
-            background-color: #00aa00;
-            box-shadow: 0 0 20px #00ff00;
+            background: #4caf50;
+            box-shadow: 0 0 15px #4caf50;
         }
 
-        .light.error {
-            background-color: #990000;
-            box-shadow: 0 0 20px #ff3333;
-        }
-
-    .switch-buttons form,
-    .reset-button form {
-        display: inline-block;
-        margin: 0.25rem;
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
     }
 
-    .switch-buttons button,
-    .reset-button button {
-        background-color: #1e1e1e;
-        color: white;
-        border: none;
-        padding: 0.6rem 1.4rem;
-        font-size: 1rem;
-        border-radius: 6px;
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
         cursor: pointer;
-        transition: background 0.2s;
+        border: none;
+        border-radius: 8px;
+        background-color: #2196f3;
+        color: white;
+        transition: background-color 0.2s;
     }
 
-        .switch-buttons button:hover,
-        .reset-button button:hover {
-            background-color: #333;
+        button:hover {
+            background-color: #1976d2;
         }
 
-    .status-text {
-        margin-top: 1rem;
-        font-size: 1rem;
-        color: #444;
+    .status, .message {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 16px;
     }
 
-        .status-text strong {
-            font-weight: 600;
+        .message.success {
+            color: green;
+            font-weight: bold;
         }
 
-    .message {
-        margin-top: 1rem;
-        font-size: 1.1rem;
-        font-weight: bold;
-    }
-
-    .success {
-        color: #00aa00;
-    }
-
-    .error {
-        color: #cc0000;
-    }
+        .message.error {
+            color: red;
+            font-weight: bold;
+        }
 </style>
 
-<div class="game-container">
-    <div class="game-title">Switch Puzzle</div>
+<div class="game-wrapper">
+    <h2>🧠 Switch Puzzle Game</h2>
 
-    <div class="switch-lights">
-        @{
-            string state = Model.GetStateString();
-            for (int i = 0; i < 3; i++)
-            {
-                var cssClass = "";
-
-                if (Model.IsComplete)
-                {
-                    cssClass = "light on"; // All green if solved
-                }
-                else
-                {
-                    cssClass = state[i] == '1' ? "light on" : "light"; // Show current state
-                }
-
-                <div class="@cssClass"></div>
-            }
+    <div class="lights">
+        @for (int i = 0; i < state.Length; i++)
+        {
+            <div class="light @(state[i] == '1' ? "on" : "")"></div>
         }
     </div>
 
-
-    <div class="switch-buttons">
-        <form method="post" asp-action="Press">
-            <button type="submit" name="id" value="0">Switch A</button>
-            <button type="submit" name="id" value="1">Switch B</button>
-            <button type="submit" name="id" value="2">Switch C</button>
-        </form>
+    <div class="buttons">
+        <button onclick="pressSwitch(0)">Switch A</button>
+        <button onclick="pressSwitch(1)">Switch B</button>
+        <button onclick="pressSwitch(2)">Switch C</button>
     </div>
 
-    <div class="reset-button">
-        <form method="post" asp-action="Reset">
-            <button type="submit">🔁 Reset</button>
-        </form>
+    <div class="buttons">
+        <button onclick="resetGame()">🔁 Reset</button>
     </div>
 
-    <div class="status-text">
+    <div class="status status-text">
         <p>State: <strong>@Model.GetStateString()</strong></p>
         <p>Moves Used: <strong>@Model.MoveCount</strong> / @Model.MaxMoves</p>
     </div>
@@ -156,3 +114,46 @@
         <div class="message error">❌ Out of Moves! Try again.</div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function updateUI(data) {
+            const lights = document.querySelectorAll(".lights .light");
+            for (let i = 0; i < lights.length; i++) {
+                lights[i].className = "light " + (data.state[i] === "1" ? "on" : "");
+            }
+
+            document.querySelector(".status-text").innerHTML = `
+                        <p>State: <strong>${data.state}</strong></p>
+                        <p>Moves Used: <strong>${data.moves}</strong> / ${data.maxMoves}</p>
+                    `;
+
+            const oldMsg = document.querySelector(".message");
+            if (oldMsg) oldMsg.remove();
+
+            if (data.isComplete) {
+                document.querySelector(".game-wrapper").insertAdjacentHTML("beforeend", `<div class="message success">🎉 Puzzle Solved Successfully!</div>`);
+            } else if (data.gameOver) {
+                document.querySelector(".game-wrapper").insertAdjacentHTML("beforeend", `<div class="message error">❌ Out of Moves! Try again.</div>`);
+            }
+        }
+
+        function pressSwitch(id) {
+            fetch("/Game/AjaxPress", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `id=${id}`
+            })
+                .then(res => res.json())
+                .then(updateUI);
+        }
+
+        function resetGame() {
+            fetch("/Game/AjaxReset", {
+                method: "POST"
+            })
+                .then(res => res.json())
+                .then(updateUI);
+        }
+    </script>
+}

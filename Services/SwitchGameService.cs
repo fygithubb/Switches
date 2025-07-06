@@ -40,5 +40,8 @@
             CurrentState = 0b000;
             MoveCount = 0;
         }
+
+
+
     }
 }

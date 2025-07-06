@@ -28,6 +28,40 @@ namespace Switches.Controllers
             _game.Reset();
             return RedirectToAction("Index");
         }
+
+
+        [HttpPost]
+        public JsonResult AjaxPress(int id)
+        {
+            _game.PressSwitch(id);
+
+            return Json(new
+            {
+                state = _game.GetStateString(),
+                moves = _game.MoveCount,
+                maxMoves = _game.MaxMoves,
+                isComplete = _game.IsComplete,
+                gameOver = _game.OutOfMoves
+            });
+        }
+
+
+
+        [HttpPost]
+        public JsonResult AjaxReset()
+        {
+            _game.Reset();
+
+            return Json(new
+            {
+                state = _game.GetStateString(),
+                moves = _game.MoveCount,
+                maxMoves = _game.MaxMoves,
+                isComplete = _game.IsComplete,
+                gameOver = _game.OutOfMoves
+            });
+        }
+
     }
 }
 
