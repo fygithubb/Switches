@@ -1,7 +1,10 @@
-﻿namespace Switches.Services
+﻿using System.Text.Json.Serialization;
+
+namespace Switches.Services
 {
     public class SwitchGameService
     {
+        [JsonInclude]
         public int[] toggleMasks = new int[]
         {
             0b110,   //Switch A affect A and B
@@ -9,8 +12,13 @@
             0b001    // Switch C affects C
         };
 
+        [JsonInclude]
         public int CurrentState { get; private set; } = 0b000;
+
+        [JsonInclude]
         public int MoveCount { get; private set; } = 0;
+
+        [JsonInclude]
         public int MaxMoves { get; private set; } = 4;
 
 
