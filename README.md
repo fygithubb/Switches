@@ -2,6 +2,8 @@
 🔁 Switch Puzzle Game
 A simple and fun ASP.NET Core MVC puzzle game. The objective is to turn all the lights on using a limited number of switch presses. Each switch toggles specific lights, making it a great brain-teaser.
 
+You can check the game here on this link : https://switches.onrender.com/
+
 🎮 Game Rules
 You have 4 moves to turn on all 3 lights.
 
