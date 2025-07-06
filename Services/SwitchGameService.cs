@@ -2,7 +2,7 @@
 {
     public class SwitchGameService
     {
-        private readonly int[] toggleMasks = new int[]
+        public int[] toggleMasks = new int[]
         {
             0b110,   //Switch A affect A and B
             0b011,   // Switch B affects B and C

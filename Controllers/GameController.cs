@@ -18,7 +18,17 @@ namespace Switches.Controllers
                 SaveGame(newGame);
                 return newGame;
             }
-            return JsonSerializer.Deserialize<SwitchGameService>(json)!;
+
+            var game = JsonSerializer.Deserialize<SwitchGameService>(json)!;
+
+            game.toggleMasks = new int[]
+            {
+                0b110,   // A affects A & B
+                0b011,   // B affects B & C
+                0b001    // C affects C
+            };
+
+            return game;
         }
 
         // Helper: Save game to session
